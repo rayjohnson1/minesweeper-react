@@ -1,5 +1,5 @@
 body {
-  margin: 0;
+  /* margin: 100px; */
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -16,39 +16,95 @@ code {
 
 .game-board{
   display: inline-grid;
-  border: 1px solid black;
   margin: 0 auto;
-  grid-gap: 1px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .16);
+  padding: 10px;
 }
 
 .row{
   display: grid;
   grid-auto-rows: auto;
-  grid-gap: 1px;
+  /* grid-gap: 5px; */
 }
 
 .tile{
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, .3);
+  border: 2px solid white;
+}
+
+
+
+.tile .tile--covered{
+  width: 100%;
+  height: 100%;
+  background: cornflowerblue;
+}
+
+.tile .tile--flagged{
+  width: 100%;
+  height: 100%;
+  background: cornflowerblue;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.tile .tile--flagged img{
+  width: 85%;
+  height: auto;
+}
+
+.tile .tile--mine{
+  background: rgba(255, 0, 0, .2);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile .tile--mine img{
+  width: 70%;
+  height: auto;
+}
+
+.tile .tile--mine--clicked{
   position: relative;
 }
 
-.tile::before{
-  content: '';
+.tile .tile--mine--clicked::before{
+  content: 'X';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: cornflowerblue;
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  line-height: 100%;
+  color: red;
 }
 
-.tile.tile--uncovered::before{
-  display: none;
+
+
+
+
+
+
+.tile .tile--number{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.tile .tile--number p{
+  font-size: 20px;
+  font-weight: 500;
 }

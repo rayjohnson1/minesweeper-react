@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import GameBoard from './GameBoard/GameBoard';
+import GameManager from './GameManager/GameManager';
 
 class App extends Component {
   render() {
     return (
-      <GameBoard numMines={10} boardSize={9} />
+      <GameManager boardSize={15} numMines={40} />
     );
   }
 }
