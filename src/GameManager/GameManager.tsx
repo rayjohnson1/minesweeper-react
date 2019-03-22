@@ -7,6 +7,13 @@ import GameBoard from '../GameBoard/GameBoard';
 interface IProps {
     boardSize: number;
     numMines: number;
+    gameState: {
+        inProgress: boolean,
+        playerWon: () => void;
+        playerLost: () => void;
+        didWin: boolean,
+        didLoose: boolean
+    }
 }
 
 interface IState {
@@ -14,8 +21,6 @@ interface IState {
     gameBoardList: TileHash;
     numTiles: number;
     numTilesRemaining: number;
-    didWin: boolean;
-    didLoose: boolean;
 }
 
 export default class GameManager extends Component<IProps, IState> {
@@ -34,10 +39,12 @@ export default class GameManager extends Component<IProps, IState> {
             gameBoardList: this._gameController.gameBoardList,
             numTiles,
             numTilesRemaining: numTiles,
-            didWin: false,
-            didLoose: false
         }
 
+    }
+
+    initGame = () => {
+        this._gameController = new GameController(this.props.boardSize, this.props.numMines);
     }
 
     componentDidUpdate(){
@@ -47,6 +54,10 @@ export default class GameManager extends Component<IProps, IState> {
     handleUncoverTileClick = (e: React.MouseEvent) => {
 
         e.preventDefault();
+
+        if(this.props.gameState.inProgress === false)
+            return;
+
         let tileId = e.currentTarget.getAttribute('data-tile-id') as unknown as number;
         this.uncoverTile(tileId);
 
@@ -66,8 +77,8 @@ export default class GameManager extends Component<IProps, IState> {
             const newState = this.state.gameBoardList;
             newState[tileId].clickedMine = true;
 
-            this.setState({ didLoose: true });
             this.revealAllTiles();
+            this.props.gameState.playerLost();
             return;
         }
 
@@ -123,7 +134,14 @@ export default class GameManager extends Component<IProps, IState> {
 
     handleFlagTileClick = (e: React.MouseEvent) => {
         e.preventDefault();
+
+        if(this.props.gameState.inProgress === false)
+            return;
+
         let tileId = e.currentTarget.getAttribute('data-tile-id') as unknown as number;
+        if(this.state.gameBoardList[tileId].isUncovered)
+            return;
+
         this.toggleFlag(tileId);
 
     }
@@ -139,18 +157,17 @@ export default class GameManager extends Component<IProps, IState> {
 
     checkIfWon = () => {
 
-        if(this.state.didWin === false){
+        if(this.props.gameState.didWin === false){
             if(this.state.numTilesRemaining === this.props.numMines){
-                this.setState({ didWin: true });
+                this.props.gameState.playerWon();
             }
         }
     }
 
+
     render() {
         return (
             <React.Fragment>
-                { this.state.didWin && <h1>I Won</h1> }
-                { this.state.didLoose && <h1>I Lost</h1> }
                 <GameBoard 
                     gameBoardMatrix={this.state.gameBoardMatrix}
                     boardSize={this.props.boardSize}
@@ -178,7 +195,7 @@ export interface IRowProps {
 
 export const Row = (props: IRowProps) => {
     return (
-        <div className={`row`} style={{ gridTemplateColumns: `repeat(${props.tiles.length}, 50px)` }}>{
+        <div className={`game-board__row`} style={{ gridTemplateColumns: `repeat(${props.tiles.length}, 50px)` }}>{
             props.tiles.map(tile => {
 
                 return (
