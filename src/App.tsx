@@ -8,7 +8,9 @@ interface IState {
   numMines: number;
   playerWon: boolean;
   playerLost: boolean;
+  canInteract: boolean;
   timer: number;
+  reset: boolean;
 }
 
 class App extends Component<{}, IState> {
@@ -21,17 +23,19 @@ class App extends Component<{}, IState> {
     this.state = {
       gameInProgress: false,
       boardSize: 9,
-      numMines: 1,
+      numMines: 10,
       playerLost: false,
       playerWon: false,
-      timer :0,
+      timer: 0,
+      canInteract: false,
+      reset: false,
     }
 
   }
 
   handleStartGameClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    this.setState({ gameInProgress: true });
+    this.setState({ gameInProgress: true, reset: true });
     this.startTimer();
   }
 
@@ -49,18 +53,32 @@ class App extends Component<{}, IState> {
     })
   }
 
+  resetGame = (e: React.MouseEvent) => {
+    this.setState({
+      gameInProgress: false,
+      boardSize: 9,
+      numMines: 10,
+      playerLost: false,
+      playerWon: false,
+      timer: 0,
+      canInteract: false,
+      reset: false,
+    })
+  }
+
   playerWon = () => {
     this.setState({
-      //gameInProgress: false
-      playerWon: true
+      playerWon: true,
+      canInteract: false,
     });
     this.stopTimer();
   }
 
   playerLost = () => {
     this.setState({
-      //gameInProgress: false
-      playerLost: true
+      playerLost: true,
+      canInteract: false,
+      
     });
     this.stopTimer()
   }
@@ -70,7 +88,8 @@ class App extends Component<{}, IState> {
     this.setState({
       numMines: 10,
       boardSize: 9,
-      gameInProgress: true
+      gameInProgress: true,
+      reset: true,
     });
     this.startTimer();
   }
@@ -80,7 +99,8 @@ class App extends Component<{}, IState> {
     this.setState({
       numMines: 99,
       boardSize: 30,
-      gameInProgress: true
+      gameInProgress: true,
+      reset: true,
     })
     this.startTimer();
   }
@@ -90,17 +110,18 @@ class App extends Component<{}, IState> {
     this.setState({
       numMines: 40,
       boardSize: 16,
-      gameInProgress: true
+      gameInProgress: true,
+      reset: true,
     })
     this.startTimer();
   }
 
-  componentDidMount(){
-
-  }
-
   startTimer = () => {
 
+    if(this.state.canInteract)
+      return;
+
+    this.setState({ canInteract: true })
     this.timer = setInterval(() => {
 
       this.setState((state) => ({
@@ -119,8 +140,10 @@ class App extends Component<{}, IState> {
     return (
       <div className={`grid page-grid`}>
         <div className={`row`}>
-        { this.state.playerWon && <h1>You won in {this.state.timer} seconds!</h1> }
-        { this.state.playerLost && <h1>You Lost</h1> }
+        { this.state.playerWon && <h1 style={{color: 'green'}}>You won in {this.state.timer} seconds!</h1> }
+        { this.state.playerLost && <h1 style={{color: 'red'}}>You Lost! Your time: {this.state.timer} seconds.</h1> }
+        { this.state.playerLost && <button onClick={this.resetGame}>Play Again!</button> }
+        { this.state.playerWon && <button onClick={this.resetGame}>Play Again!</button> }
         </div>
         <div className={`row`}>
           <div className={`grid__col`} style={{display: 'grid', gridAutoRows: 'min-content', gridGap: '10px' }}>
@@ -168,15 +191,6 @@ class App extends Component<{}, IState> {
                 <Timer time={this.state.timer}  />
               </div>
             </div>
-
-            <div className={`card`}>
-              <div className={`card__item`}>
-                <form>
-                  <input type={`text`} placeholder={`Name`} />
-                  <input type={`submit`} value={`Submit Score`} />
-                </form>
-              </div>
-            </div>
             
             
           </div>
@@ -188,9 +202,10 @@ class App extends Component<{}, IState> {
                     playerWon: this.playerWon,
                     playerLost: this.playerLost,
                     didWin: this.state.playerWon,
-                    didLoose: this.state.playerLost
+                    didLoose: this.state.playerLost,
+                    canInteract: this.state.canInteract,
                   }} boardSize={this.state.boardSize} numMines={this.state.numMines} />
-                  : <div className={`start-game-poster`}><button onClick={this.handleStartGameClick}>Start Game</button></div>
+                  : <div className={`start-game-poster`}><h1>Start a Game!</h1></div>
               }
           </div>
         </div>

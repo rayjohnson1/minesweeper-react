@@ -12,7 +12,8 @@ interface IProps {
         playerWon: () => void;
         playerLost: () => void;
         didWin: boolean,
-        didLoose: boolean
+        didLoose: boolean,
+        canInteract: boolean,
     }
 }
 
@@ -55,7 +56,7 @@ export default class GameManager extends Component<IProps, IState> {
 
         e.preventDefault();
 
-        if(this.props.gameState.inProgress === false)
+        if(this.props.gameState.canInteract === false)
             return;
 
         let tileId = e.currentTarget.getAttribute('data-tile-id') as unknown as number;
@@ -135,7 +136,7 @@ export default class GameManager extends Component<IProps, IState> {
     handleFlagTileClick = (e: React.MouseEvent) => {
         e.preventDefault();
 
-        if(this.props.gameState.inProgress === false)
+        if(this.props.gameState.canInteract === false)
             return;
 
         let tileId = e.currentTarget.getAttribute('data-tile-id') as unknown as number;
@@ -166,6 +167,7 @@ export default class GameManager extends Component<IProps, IState> {
 
 
     render() {
+
         return (
             <React.Fragment>
                 <GameBoard 

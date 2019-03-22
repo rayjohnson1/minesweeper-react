@@ -144,6 +144,10 @@ code {
   padding: 10px;
 }
 
+.card__item:last-child{
+  border-bottom: 0px;
+}
+
 
 
 
